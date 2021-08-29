@@ -1,15 +1,17 @@
 import asyncio
 import logging
+import uuid
 
 from slixmpp import ClientXMPP
 
 logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
 class Client(ClientXMPP):
-
+    vecinos = []
+    messages_recieved = []
     def __init__(self, jid, password):
         ClientXMPP.__init__(self, jid, password)
 
-        vecinos = []
+
 
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
@@ -23,6 +25,7 @@ class Client(ClientXMPP):
 
     async def session_start(self, event):
         print("He entrado al chat exitosamente :)")
+        print(self.boundjid.user)
         self.send_presence(pshow= "chat", pstatus="Available")
         self.get_roster()
 
@@ -37,9 +40,22 @@ class Client(ClientXMPP):
             #notification(recipient, "paused")
             print("Message sent!")
 
+        def send_flood():
+            self.register_plugin("xep_0085")
+            print("Sending Flood message")
+            message = input("Message: ")
+            subject = input("Reciever: ")
+            subject = subject + " " +str(uuid.uuid4())
+            for i in range(len(self.vecinos)):
+                recipient = self.vecinos[i] + "@alumchat.xyz"
+                self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
+                print("Enviado a " + recipient+ "\n")
+
+
+
         menu_adentro = True
         while menu_adentro:
-            print("1. Chat\n2.Salir")
+            print("1. Chat\n2.Salir\n3.Send Flood")
 
             opcion = int(input("Que opción desea: "))
 
@@ -49,11 +65,23 @@ class Client(ClientXMPP):
                 self.send_presence(pshow="away", pstatus="Offline")
                 self.disconnect()
                 menu_adentro = False
+            elif opcion == 3:
+                send_flood()
 
             await self.get_roster()
 
     def message(self, msg):
         if msg['type'] in ('chat', 'normal'):
+            self.messages_recieved.append(msg['subject'])
+            if str(self.boundjid.user) in msg['subject']:
+                print("Mensaje Flood recibido exitosamente!\n" + msg)
+            elif msg['subject'] in self.messages_recieved:
+                pass
+            else:
+                for i in range(len(self.vecinos)):
+                    recipient = self.vecinos[i] + "@alumchat.xyz"
+                    self.send_message(mto=recipient, mbody=msg['body'], mtype="chat", msubject=msg['subject'])
+                    print("Reenviado a " + recipient+ "\n")
             msg.reply("Thanks for sending\n%(subject)s" % msg).send()
         print("Mensaje enviado %(subject)s " % msg)
 
@@ -103,17 +131,17 @@ def login(username, password):
     #client.disconnect()
     client.use_proxy = True
     client.proxy_config = {'host': 'alumchat.xyz','port': 5222}
-    #recvec = True
+    recvec = True
 
-    #while recvec:
-        #print("1. Ingresar un nodo vecino\n2. Continuar")
-        #oooo = input()
-        #if oooo == "1":
-        #    vec = input("Ingrese el nombre de usuario del vecino")
-        #    client.vecinos.append(vec)
-        #elif oooo == "2":
-        #    recvec = False
-        #    print("Continuando... ")
+    while recvec:
+        print("1. Ingresar un nodo vecino\n2. Continuar")
+        oooo = input()
+        if oooo == "1":
+            vec = input("Ingrese el nombre de usuario del vecino: ")
+            client.vecinos.append(vec)
+        elif oooo == "2":
+            recvec = False
+            print("Continuando... ")
 
 
     client.register_plugin("xep_0030")
