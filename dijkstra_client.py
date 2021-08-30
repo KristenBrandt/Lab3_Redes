@@ -5,6 +5,7 @@ import asyncio
 import logging
 import uuid
 import time
+import networkx as nx
 
 from slixmpp import ClientXMPP
 
@@ -12,6 +13,7 @@ logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
 class Client(ClientXMPP):
     vecinos = []
     messages_recieved = []
+    topo = nx.DiGraph()
     def __init__(self, jid, password):
         ClientXMPP.__init__(self, jid, password)
 
@@ -54,6 +56,7 @@ class Client(ClientXMPP):
                 recipient = self.vecinos[i] + "@alumchat.xyz"
                 self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
                 print("Enviado a " + recipient+ "\n")
+            self.messages_recieved.append(msg['subject'])
 
 
 
