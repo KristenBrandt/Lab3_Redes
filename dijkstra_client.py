@@ -72,7 +72,7 @@ class Client(ClientXMPP):
 
         menu_adentro = True
         while menu_adentro:
-            print("1. Chat\n2.Salir\n3.Send Flood\n4.Listen")
+            print("1. Chat\n2.Salir\n3.Send Dijkstra\n4.Listen")
 
             opcion = int(input("Que opción desea: "))
 
@@ -83,7 +83,7 @@ class Client(ClientXMPP):
                 self.disconnect()
                 menu_adentro = False
             elif opcion == 3:
-                send_flood()
+                send_dijkstra()
             elif opcion == 4:
                 print("I  am  listening! ")
                 time.sleep(4)
@@ -94,13 +94,13 @@ class Client(ClientXMPP):
         if msg['type'] in ('chat', 'normal'):
             sublist = msg['subject'].split()
             print(sublist)
-            if str(self.boundjid.user) in sublist[1]:
+            if str(self.boundjid.user) in sublist[0]:
                 print("Mensaje Dijkstra recibido exitosamente!\n" + "\nMensaje: " +msg['body'] + "\n")
             # elif msg['subject'] in self.messages_recieved:
             #     print('El mensaje flood con este subject: ' + msg['subject'] + ' ya habia sido recibido antes!\n')
             else:
 
-                path = nx.dijkstra_path(self.G, sublist[0] , sublist[1])
+                path = nx.dijkstra_path(self.G, sublist[1] , sublist[0])
                 for i in range(len(path)):
                     if self.boundjid.user in path[i]:
                         recipient = path[i+1] + "@alumchat.xyz"
