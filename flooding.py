@@ -46,7 +46,7 @@ class Client(ClientXMPP):
 
         def send_flood():
             self.register_plugin("xep_0085")
-            print("Sending Flood message")
+            print("\nSending Flood message\n")
             message = input("Message: ")
             subject = input("Reciever: ")
             subject = subject + " " +str(uuid.uuid4())

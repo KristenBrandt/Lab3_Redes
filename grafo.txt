@@ -1,7 +1,6 @@
-a b 3
-a c 4
-b c 5
-c b 5
-b d 4
-d e 2
-a e 20
+kristry pepitry 3
+kristry oditry 20
+pepitry oditry 5
+oditry kristry 20
+oditry pepitry 5
+pepitry kristry 3

@@ -12,12 +12,20 @@ from slixmpp import ClientXMPP
 logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
 class Client(ClientXMPP):
     vecinos = []
-    messages_recieved = []
-    topo = nx.DiGraph()
+    # messages_recieved = []
+    tups = []
+    G = nx.DiGraph()
     def __init__(self, jid, password):
         ClientXMPP.__init__(self, jid, password)
 
+        #Open txt file containing graph data and populate netowrkx graph
+        f = open("grafo.txt", "r")
+        for x in f:
+            l = x.split()
+            l[2] = int(l[2])
+            self.tups.append(tuple(l))
 
+        self.G.add_weighted_edges_from(self.tups)
 
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
@@ -46,17 +54,19 @@ class Client(ClientXMPP):
             #notification(recipient, "paused")
             print("Message sent!")
 
-        def send_flood():
+        def send_dijkstra():
             self.register_plugin("xep_0085")
-            print("Sending Flood message")
+            print("\nSending Dijkstra message\n")
             message = input("Message: ")
-            subject = input("Reciever: ")
-            subject = subject + " " +str(uuid.uuid4())
-            for i in range(len(self.vecinos)):
-                recipient = self.vecinos[i] + "@alumchat.xyz"
-                self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
-                print("Enviado a " + recipient+ "\n")
-            self.messages_recieved.append(msg['subject'])
+            reciever = input("Reciever: ")
+            subject = reciever + " " + str(self.boundjid.user)
+            path = nx.dijkstra_path(self.G,self.boundjid.user, reciever)
+            for i in range(len(path)):
+                if self.boundjid.user in path[i]:
+                    recipient = path[i+1] + "@alumchat.xyz"
+                    self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
+                    print("Enviado a " + recipient+ "\n")
+            # self.messages_recieved.append(msg['subject'])
 
 
 
@@ -82,16 +92,21 @@ class Client(ClientXMPP):
 
     def message(self, msg):
         if msg['type'] in ('chat', 'normal'):
-            if str(self.boundjid.user) in msg['subject']:
-                print("Mensaje Flood recibido exitosamente!\n" + "\nMensaje: " +msg['body'] + "\n")
-            elif msg['subject'] in self.messages_recieved:
-                print('El mensaje flood con este subject: ' + msg['subject'] + ' ya habia sido recibido antes!\n')
+            sublist = msg['subject'].split()
+            print(sublist)
+            if str(self.boundjid.user) in sublist[1]:
+                print("Mensaje Dijkstra recibido exitosamente!\n" + "\nMensaje: " +msg['body'] + "\n")
+            # elif msg['subject'] in self.messages_recieved:
+            #     print('El mensaje flood con este subject: ' + msg['subject'] + ' ya habia sido recibido antes!\n')
             else:
-                for i in range(len(self.vecinos)):
-                    recipient = self.vecinos[i] + "@alumchat.xyz"
-                    self.send_message(mto=recipient, mbody=msg['body'], mtype="chat", msubject=msg['subject'])
-                    print("Reenviado a " + recipient+ "\n")
-            self.messages_recieved.append(msg['subject'])
+
+                path = nx.dijkstra_path(self.G, sublist[0] , sublist[1])
+                for i in range(len(path)):
+                    if self.boundjid.user in path[i]:
+                        recipient = path[i+1] + "@alumchat.xyz"
+                        self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
+                        print("\nMensaje Dijkstra reenviado a " + recipient+ "\n")
+            # self.messages_recieved.append(msg['subject'])
             #msg.reply("Thanks for sending\n%(subject)s" % msg).send()
         #print("Mensaje enviado %(subject)s " % msg)
 
@@ -141,17 +156,17 @@ def login(username, password):
     #client.disconnect()
     client.use_proxy = True
     client.proxy_config = {'host': 'alumchat.xyz','port': 5222}
-    recvec = True
+    # recvec = True
 
-    while recvec:
-        print("1. Ingresar un nodo vecino\n2. Continuar")
-        oooo = input()
-        if oooo == "1":
-            vec = input("Ingrese el nombre de usuario del vecino: ")
-            client.vecinos.append(vec)
-        elif oooo == "2":
-            recvec = False
-            print("Continuando... ")
+    # while recvec:
+    #     print("1. Ingresar un nodo vecino\n2. Continuar")
+    #     oooo = input()
+    #     if oooo == "1":
+    #         vec = input("Ingrese el nombre de usuario del vecino: ")
+    #         client.vecinos.append(vec)
+    #     elif oooo == "2":
+    #         recvec = False
+    #         print("Continuando... ")
 
 
     client.register_plugin("xep_0030")
