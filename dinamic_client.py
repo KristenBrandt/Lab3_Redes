@@ -15,7 +15,7 @@ if sys.platform == 'win32' and sys.version_info >= (3, 8):
 
 from slixmpp import ClientXMPP
 
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
+# logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
 class Client(ClientXMPP):
     vecinos = {}
     # messages_recieved = []

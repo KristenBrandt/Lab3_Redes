@@ -14,7 +14,7 @@ if sys.platform == 'win32' and sys.version_info >= (3, 8):
 
 from slixmpp import ClientXMPP
 
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
+# logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
 class Client(ClientXMPP):
     vecinos = []
     messages_recieved = []
@@ -35,7 +35,7 @@ class Client(ClientXMPP):
 
     async def session_start(self, event):
         print("He entrado al chat exitosamente :)")
-        print(self.boundjid.user)
+        # print(self.boundjid.user)
         self.send_presence(pshow= "chat", pstatus="Available")
         self.get_roster()
 
@@ -66,6 +66,7 @@ class Client(ClientXMPP):
 
         menu_adentro = True
         while menu_adentro:
+            print(self.boundjid.user)
             print("1. Chat\n2.Salir\n3.Send Flood\n4.Listen")
 
             opcion = int(input("Que opción desea: "))
