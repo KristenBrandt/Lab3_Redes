@@ -60,7 +60,7 @@ class Client(ClientXMPP):
                 recipient = self.vecinos[i] + "@alumchat.xyz"
                 self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
                 print("Enviado a " + recipient+ "\n")
-            self.messages_recieved.append(msg['subject'])
+            self.messages_recieved.append(subject)
 
 
 
