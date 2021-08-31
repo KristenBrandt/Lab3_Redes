@@ -94,7 +94,7 @@ class Client(ClientXMPP):
                 send_bellford()
             elif opcion == 5:
                 print("I  am  listening! ")
-                time.sleep(4)
+                time.sleep(1)
             elif opcion == 6:
                 print(self.dvs)
 
@@ -151,7 +151,7 @@ class Client(ClientXMPP):
             # elif msg['subject'] in self.messages_recieved:
             #     print('El mensaje flood con este subject: ' + msg['subject'] + ' ya habia sido recibido antes!\n')
             elif str(self.boundjid.user) in sublist[0]:
-                print("\nMensaje Bellman-Ford recibido exitosamente!\n" + "\nMensaje: " +msg['body'] + "\n")
+                print("\nMensaje Bellman-Ford recibido exitosamente!\n" +"\nSender: " + sublist[1] + "\n\nMensaje: " +msg['body'] + "\n")
             else:
                 print("\nReenviando mensaje Bellman-Ford\n")
                 calcs = {}

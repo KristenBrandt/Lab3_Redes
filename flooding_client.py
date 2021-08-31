@@ -5,6 +5,12 @@ import asyncio
 import logging
 import uuid
 import time
+import sys
+import aiodns
+import asyncio
+
+if sys.platform == 'win32' and sys.version_info >= (3, 8):
+     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from slixmpp import ClientXMPP
 
@@ -46,14 +52,15 @@ class Client(ClientXMPP):
 
         def send_flood():
             self.register_plugin("xep_0085")
-            print("Sending Flood message")
+            print("\nSending Flood message\n")
             message = input("Message: ")
             subject = input("Reciever: ")
-            subject = subject + " " +str(uuid.uuid4())
+            subject = subject + " " +self.boundjid.user + " " +str(uuid.uuid4())
             for i in range(len(self.vecinos)):
                 recipient = self.vecinos[i] + "@alumchat.xyz"
                 self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
                 print("Enviado a " + recipient+ "\n")
+            self.messages_recieved.append(subject)
 
 
 
@@ -73,16 +80,17 @@ class Client(ClientXMPP):
                 send_flood()
             elif opcion == 4:
                 print("I  am  listening! ")
-                time.sleep(4)
+                time.sleep(1)
 
             await self.get_roster()
 
     def message(self, msg):
         if msg['type'] in ('chat', 'normal'):
-            if str(self.boundjid.user) in msg['subject']:
-                print("Mensaje Flood recibido exitosamente!\n" + "\nMensaje: " +msg['body'] + "\n")
-            elif msg['subject'] in self.messages_recieved:
+
+            if msg['subject'] in self.messages_recieved:
                 print('El mensaje flood con este subject: ' + msg['subject'] + ' ya habia sido recibido antes!\n')
+            elif str(self.boundjid.user) in msg['subject']:
+                print("Mensaje Flood recibido exitosamente!\n" + "\nSender: " + str(msg['subject'].split()[1])+ "\n\nMensaje: " +msg['body'] + "\n")
             else:
                 for i in range(len(self.vecinos)):
                     recipient = self.vecinos[i] + "@alumchat.xyz"

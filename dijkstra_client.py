@@ -106,7 +106,7 @@ class Client(ClientXMPP):
                 send_dijkstra()
             elif opcion == 4:
                 print("I  am  listening! ")
-                time.sleep(4)
+                time.sleep(1)
 
             await self.get_roster()
 
