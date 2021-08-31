@@ -5,6 +5,12 @@ import asyncio
 import logging
 import uuid
 import time
+import sys
+import aiodns
+import asyncio
+
+if sys.platform == 'win32' and sys.version_info >= (3, 8):
+     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from slixmpp import ClientXMPP
 
