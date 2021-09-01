@@ -165,14 +165,21 @@ class Client(ClientXMPP):
                 calcs = {}
                 reciever = sublist[0]
                 for key in self.vecinos:
-                    calcs[key] = self.vecinos[key][reciever] + self.dvs[key]
-                path = min(calcs, key=calcs.get)
-                recipient = path+"@alumchat.xyz"
-                jumps = int(sublist[2])
-                jumps = jumps + 1
-                subject = sublist[0] + " " + sublist[1] + " " + str(jumps)
-                self.send_message(mto=recipient, mbody=msg['body'], mtype="chat", msubject=subject)
-                print("\nReenviado a " + recipient+ "\n")
+                    try:
+                        calcs[key] = self.vecinos[key][reciever] + self.dvs[key]
+                    except:
+                        print("Alguno de sus vecinos no ha enviado sus DVs!")
+                try:
+                    path = min(calcs, key=calcs.get)
+                    recipient = path+"@alumchat.xyz"
+                    jumps = int(sublist[2])
+                    jumps = jumps + 1
+                    subject = sublist[0] + " " + sublist[1] + " " + str(jumps)
+                    self.send_message(mto=recipient, mbody=msg['body'], mtype="chat", msubject=subject)
+                    print("\nReenviado a " + recipient+ "\n")
+                except:
+                    print("Error enviando el mensaje Bellman-Ford...")
+
             # self.messages_recieved.append(msg['subject'])
             #msg.reply("Thanks for sending\n%(subject)s" % msg).send()
         #print("Mensaje enviado %(subject)s " % msg)
