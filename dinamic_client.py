@@ -61,7 +61,10 @@ class Client(ClientXMPP):
             subject = reciever + " " + str(self.boundjid.user) + " 1"
             calcs = {}
             for key in self.vecinos:
-                calcs[key] = self.vecinos[key][reciever] + self.dvs[key]
+                try:
+                    calcs[key] = self.vecinos[key][reciever] + self.dvs[key]
+                except:
+                    print(" ")
             path = min(calcs, key=calcs.get)
             recipient = path+"@alumchat.xyz"
             self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
