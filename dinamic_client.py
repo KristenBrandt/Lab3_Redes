@@ -64,11 +64,16 @@ class Client(ClientXMPP):
                 try:
                     calcs[key] = self.vecinos[key][reciever] + self.dvs[key]
                 except:
-                    print(" ")
-            path = min(calcs, key=calcs.get)
-            recipient = path+"@alumchat.xyz"
-            self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
-            print("Enviado a " + recipient+ "\n")
+                    print("Alguno de sus vecinos no ha enviado sus DVs!")
+            try:
+                path = min(calcs, key=calcs.get)
+                recipient = path+"@alumchat.xyz"
+                self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
+                print("Enviado a " + recipient+ "\n")
+
+            except:
+                print("Error enviando el mensaje Bellman-Ford...")
+
             # self.messages_recieved.append(msg['subject'])
 
 
