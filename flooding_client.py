@@ -55,7 +55,7 @@ class Client(ClientXMPP):
             print("\nSending Flood message\n")
             message = input("Message: ")
             subject = input("Reciever: ")
-            subject = subject + " " +self.boundjid.user + " " +str(uuid.uuid4())
+            subject = subject + " " +self.boundjid.user + " " + "1 " +str(uuid.uuid4())
             for i in range(len(self.vecinos)):
                 recipient = self.vecinos[i] + "@alumchat.xyz"
                 self.send_message(mto=recipient, mbody=message, mtype="chat", msubject=subject)
@@ -91,8 +91,12 @@ class Client(ClientXMPP):
             if msg['subject'] in self.messages_recieved:
                 print('El mensaje flood con este subject: ' + msg['subject'] + ' ya habia sido recibido antes!\n')
             elif str(self.boundjid.user) in msg['subject']:
-                print("Mensaje Flood recibido exitosamente!\n" + "\nSender: " + str(msg['subject'].split()[1])+ "\n\nMensaje: " +msg['body'] + "\n")
+                print("Mensaje Flood recibido exitosamente!\n" + "\nSender: " + str(msg['subject'].split()[1])+ "\n\nJumps made: "+ str(msg['subject'].split()[2]) +"\n\nMensaje: " +msg['body'] + "\n")
             else:
+                subsub = str(msg['subject']).split()
+                jumps = int(subsub[2])
+                jumps = jumps + 1
+                newsub = subsub[0] + " " + subsub[1] + " " + str(jumps) + " " + subsub[3]
                 for i in range(len(self.vecinos)):
                     recipient = self.vecinos[i] + "@alumchat.xyz"
                     self.send_message(mto=recipient, mbody=msg['body'], mtype="chat", msubject=msg['subject'])

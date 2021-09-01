@@ -58,7 +58,7 @@ class Client(ClientXMPP):
             print("\nSending Bellman-Ford message\n")
             message = input("Message: ")
             reciever = input("Reciever: ")
-            subject = reciever + " " + str(self.boundjid.user)
+            subject = reciever + " " + str(self.boundjid.user) + " 1"
             calcs = {}
             for key in self.vecinos:
                 calcs[key] = self.vecinos[key][reciever] + self.dvs[key]
@@ -151,7 +151,7 @@ class Client(ClientXMPP):
             # elif msg['subject'] in self.messages_recieved:
             #     print('El mensaje flood con este subject: ' + msg['subject'] + ' ya habia sido recibido antes!\n')
             elif str(self.boundjid.user) in sublist[0]:
-                print("\nMensaje Bellman-Ford recibido exitosamente!\n" +"\nSender: " + sublist[1] + "\n\nMensaje: " +msg['body'] + "\n")
+                print("\nMensaje Bellman-Ford recibido exitosamente!\n" +"\nSender: " + sublist[1] +"\n\nJumps: " + sublist[2] +"\n\nMensaje: " +msg['body'] + "\n")
             else:
                 print("\nReenviando mensaje Bellman-Ford\n")
                 calcs = {}
@@ -160,6 +160,9 @@ class Client(ClientXMPP):
                     calcs[key] = self.vecinos[key][reciever] + self.dvs[key]
                 path = min(calcs, key=calcs.get)
                 recipient = path+"@alumchat.xyz"
+                jumps = int(sublist[2])
+                jumps = jumps + 1
+                subject = sublist[0] + " " + sublist[1] + " " + str(jumps)
                 self.send_message(mto=recipient, mbody=msg['body'], mtype="chat", msubject=subject)
                 print("\nReenviado a " + recipient+ "\n")
             # self.messages_recieved.append(msg['subject'])
